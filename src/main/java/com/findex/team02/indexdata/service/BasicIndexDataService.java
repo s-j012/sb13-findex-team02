@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class BasicIndexDataService implements IndexDataService{
+public class BasicIndexDataService implements IndexDataService {
 
   private final IndexDataRepository indexDataRepository;
   private final IndexInfoRepository indexInfoRepository;
@@ -138,7 +138,7 @@ public class BasicIndexDataService implements IndexDataService{
     Long nextIdAfter = null;
 
     if (hasNext && !indexDataList.isEmpty()) {
-      IndexData lastIndexData = indexDataList.get(indexDataList.size() -1);
+      IndexData lastIndexData = indexDataList.get(indexDataList.size() - 1);
 
       nextCursor = createCursor(lastIndexData, sortField);
       nextIdAfter = lastIndexData.getId();

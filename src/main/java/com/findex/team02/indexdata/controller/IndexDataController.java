@@ -1,14 +1,13 @@
 package com.findex.team02.indexdata.controller;
 
 import com.findex.team02.indexdata.dto.request.IndexDataCreateRequest;
+import com.findex.team02.indexdata.dto.request.IndexDataUpdateRequest;
 import com.findex.team02.indexdata.dto.response.CursorPageResponseIndexDataDto;
 import com.findex.team02.indexdata.dto.response.IndexDataDto;
-import com.findex.team02.indexdata.dto.request.IndexDataUpdateRequest;
 import com.findex.team02.indexdata.service.IndexDataService;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/index-data")
 public class IndexDataController {
