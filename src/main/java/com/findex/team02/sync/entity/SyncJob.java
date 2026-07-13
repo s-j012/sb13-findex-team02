@@ -1,6 +1,7 @@
 package com.findex.team02.sync.entity;
 
 import com.findex.team02.global.entity.BaseEntity;
+import com.findex.team02.indexinfo.entity.IndexInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
