@@ -1,6 +1,7 @@
 package com.findex.team02.indexdata.entity;
 
 import com.findex.team02.global.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,12 +14,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "index_data")
 public class IndexData extends BaseEntity {
 
@@ -30,11 +32,14 @@ public class IndexData extends BaseEntity {
   @JoinColumn(name = "index_info_id", nullable = false)
   private IndexInfo indexInfo;
 
+  @Column(nullable = false)
   private LocalDate baseDate;
 
   @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
   private SourceType sourceType;
 
+  @Column(nullable = false)
   private BigDecimal marketPrice;
 
   private BigDecimal closingPrice;
@@ -83,15 +88,40 @@ public class IndexData extends BaseEntity {
       Long tradingPrice,
       Long marketTotalAmount
   ) {
-    this.marketPrice = marketPrice;
-    this.closingPrice = closingPrice;
-    this.highPrice = highPrice;
-    this.lowPrice = lowPrice;
-    this.versus = versus;
-    this.fluctuationRate = fluctuationRate;
-    this.tradingQuantity = tradingQuantity;
-    this.tradingPrice = tradingPrice;
-    this.marketTotalAmount = marketTotalAmount;
-  }
+    if (marketPrice != null) {
+      this.marketPrice = marketPrice;
+    }
 
+    if (closingPrice != null) {
+      this.closingPrice = closingPrice;
+    }
+
+    if (highPrice != null) {
+      this.highPrice = highPrice;
+    }
+
+    if (lowPrice != null) {
+      this.lowPrice = lowPrice;
+    }
+
+    if (versus != null) {
+      this.versus = versus;
+    }
+
+    if (fluctuationRate != null) {
+      this.fluctuationRate = fluctuationRate;
+    }
+
+    if (tradingQuantity != null) {
+      this.tradingQuantity = tradingQuantity;
+    }
+
+    if (tradingPrice != null) {
+      this.tradingPrice = tradingPrice;
+    }
+
+    if (marketTotalAmount != null) {
+      this.marketTotalAmount = marketTotalAmount;
+    }
+  }
 }
