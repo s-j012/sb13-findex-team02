@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -21,7 +22,15 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "index_data")
+@Table(
+    name = "index_data",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "UK_INDEX_DATA_INDEX_INFO_BASE_DATE",
+            columnNames = {"index_info_id", "base_date"}
+        )
+    }
+)
 public class IndexData extends BaseEntity {
 
   @Id
@@ -32,30 +41,38 @@ public class IndexData extends BaseEntity {
   @JoinColumn(name = "index_info_id", nullable = false)
   private IndexInfo indexInfo;
 
-  @Column(nullable = false)
+  @Column(name = "base_date", nullable = false)
   private LocalDate baseDate;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
+  @Column(name = "source_type", nullable = false)
   private SourceType sourceType;
 
-  @Column(nullable = false)
+  @Column(name = "market_price", nullable = false, precision = 10, scale = 2)
   private BigDecimal marketPrice;
 
+  @Column(name = "closing_price", nullable = false, precision = 10, scale = 2)
   private BigDecimal closingPrice;
 
+  @Column(name = "high_price", nullable = false, precision = 10, scale = 2)
   private BigDecimal highPrice;
 
+  @Column(name = "low_price", nullable = false, precision = 10, scale = 2)
   private BigDecimal lowPrice;
 
+  @Column(name = "versus", nullable = false, precision = 10, scale = 2)
   private BigDecimal versus;
 
+  @Column(name = "fluctuation_rate", nullable = false, precision = 10, scale = 2)
   private BigDecimal fluctuationRate;
 
+  @Column(name = "trading_quantity", nullable = false)
   private Long tradingQuantity;
 
+  @Column(name = "trading_price", nullable = false)
   private Long tradingPrice;
 
+  @Column(name = "market_total_amount", nullable = false)
   private Long marketTotalAmount;
 
 
