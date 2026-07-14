@@ -1,7 +1,9 @@
 package com.findex.team02.syncjob.service;
 
 import com.findex.team02.global.entity.SyncJob;
+import com.findex.team02.syncjob.dto.CursorPageResponse;
 import com.findex.team02.syncjob.dto.SyncJobDto;
+import com.findex.team02.syncjob.dto.SyncJobSearchRequest;
 import com.findex.team02.syncjob.repository.SyncJobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,12 +18,23 @@ public class SyncJobService {
 
     private  final SyncJobRepository syncJobRepository;
 
-    public List<SyncJobDto> findAll() {
-
-        return syncJobRepository.findAll()
+    public CursorPageResponse<SyncJobDto> findAll(SyncJobSearchRequest  request) {
+        List<SyncJobDto> content = syncJobRepository.findAll()
                 .stream()
                 .map(this::toDto)
                 .toList();
+        Long nextIdAfter = content.isEmpty()
+                ? null
+                : content.get(content.size() - 1).id();
+
+        return new CursorPageResponse<>(
+                content,
+                null,
+                nextIdAfter,
+                content.size(),
+                content.size(),
+                false
+        );
     }
 
     private SyncJobDto toDto(SyncJob syncJob) {
