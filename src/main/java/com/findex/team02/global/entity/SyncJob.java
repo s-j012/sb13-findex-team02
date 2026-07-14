@@ -23,13 +23,12 @@ public class SyncJob extends BaseEntity{
 
     @Enumerated(EnumType.STRING)
     @Column(name = "jop_type", nullable = false)
-    private JopType jopType;
+    private JobType jobType;
 
     @Column(name = "index_info_id", nullable = false)
     private Long indexInfoId;
 
-
-    @Column(name = "target_date")
+    @Column(name = "target_date", nullable = false)
     private LocalDate targetDate;
 
     @Column(name = "worker", nullable = false)

@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/sync-job")
+@RequestMapping("/api/sync-jobs")
 public class SyncJobController {
 
     private final SyncJobService syncJobService;

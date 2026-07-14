@@ -26,9 +26,9 @@ public class SyncJobService {
 
     private SyncJobDto toDto(SyncJob syncJob) {
         return new SyncJobDto(syncJob.getId(),
-                syncJob.getJopType(),
+                syncJob.getJobType(),
                 syncJob.getIndexInfoId(),
-                syncJob.getTargetDate().atStartOfDay(),
+                syncJob.getTargetDate(),
                 syncJob.getWorker(),
                 syncJob.getJobTime(),
                 syncJob.getResult());
