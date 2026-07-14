@@ -1,6 +1,7 @@
 package com.findex.team02.indexdata.entity;
 
 import com.findex.team02.global.entity.BaseEntity;
+import com.findex.team02.indexinfo.entity.IndexInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -142,3 +143,4 @@ public class IndexData extends BaseEntity {
     }
   }
 }
+
