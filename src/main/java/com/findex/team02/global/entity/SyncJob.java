@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Entity
-@Table(name = "sync_job")
+@Table(name = "sync_jobs")
 public class SyncJob extends BaseEntity{
 
     @Id
@@ -22,7 +22,7 @@ public class SyncJob extends BaseEntity{
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "jop_type", nullable = false)
+    @Column(name = "job_type", nullable = false)
     private JobType jobType;
 
     @Column(name = "index_info_id", nullable = false)
@@ -38,7 +38,7 @@ public class SyncJob extends BaseEntity{
     private LocalDateTime jobTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "result")
+    @Column(name = "result", nullable = false)
     private ResultType result;
 
 
