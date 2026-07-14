@@ -40,7 +40,7 @@ public class BasicIndexInfoService implements IndexInfoService {
                 last.getId().toString(),
                 last.getId(),
                 size,
-                indexInfos.size(),
+                (long) indexInfos.size(),
                 hasNext
         );
     }

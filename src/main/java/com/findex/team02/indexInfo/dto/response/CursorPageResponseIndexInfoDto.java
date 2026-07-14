@@ -7,7 +7,7 @@ public record CursorPageResponseIndexInfoDto (
         String nextCursor,
         Long nextIdAfter,
         Integer size,
-        Integer totalElements,
-        boolean hasNext
+        Long totalElements,
+        Boolean hasNext
 ) {
 }

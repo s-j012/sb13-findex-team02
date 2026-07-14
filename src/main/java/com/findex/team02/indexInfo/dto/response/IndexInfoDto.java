@@ -12,7 +12,7 @@ public record IndexInfoDto (
     Integer employedItemsCount,
     LocalDate basePointInTime,
     BigDecimal baseIndex,
-    boolean favorite
+    Boolean favorite
 ) {
 
     public static IndexInfoDto from(IndexInfo indexInfo) {
