@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sync_jobs")
+@Table(name = "sync_job")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SyncJob extends BaseEntity {
@@ -22,7 +22,7 @@ public class SyncJob extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "index_info_id", nullable = false)
+    @JoinColumn(name = "index_info_id")
     private IndexInfo indexInfo;
 
     private LocalDate targetDate;
