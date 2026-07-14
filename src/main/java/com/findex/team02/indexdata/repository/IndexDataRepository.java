@@ -7,7 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface IndexDataRepository extends JpaRepository<IndexData, Long> {
+public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
+    IndexDataRepositoryCustom {
 
     // 특정 지수의 데이터를 최신 기준일자 순으로 조회할 때 사용한다.
     List<IndexData> findByIndexInfoIdOrderByBaseDateDesc(Long indexInfoId);
@@ -15,12 +16,14 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long> {
     // 차트 응답처럼 오래된 날짜부터 보여줘야 할 때 사용한다.
     List<IndexData> findByIndexInfoIdOrderByBaseDateAsc(Long indexInfoId);
 
+
     // CSV export에서 최신 날짜순 정렬이 필요할 때 사용한다.
     List<IndexData> findByIndexInfoIdAndBaseDateBetweenOrderByBaseDateDesc(
             Long indexInfoId,
             LocalDate startDate,
             LocalDate endDate
     );
+
 
     // 차트 조회에서 기간 내 데이터를 날짜 오름차순으로 가져올 때 사용한다.
     List<IndexData> findByIndexInfoIdAndBaseDateBetweenOrderByBaseDateAsc(
