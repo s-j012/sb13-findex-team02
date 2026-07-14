@@ -25,6 +25,20 @@ public class BasicIndexInfoService implements IndexInfoService {
 
         List<IndexInfo> indexInfos = indexInfoRepository.findAllByCondition(request);
 
+        long totalElements = indexInfoRepository.countTotalElements(request);
+
+        // 조회 결과가 없는 경우 빈 리스트 처리
+        if (indexInfos.isEmpty()) {
+            return new CursorPageResponseIndexInfoDto(
+                    List.of(),
+                    null,
+                    null,
+                    size,
+                    0L,
+                    false
+            );
+        }
+
         boolean hasNext = indexInfos.size() > size;
 
         if (hasNext) {
@@ -35,12 +49,13 @@ public class BasicIndexInfoService implements IndexInfoService {
 
         IndexInfo last = indexInfos.get(indexInfos.size() - 1);
 
+
         return new CursorPageResponseIndexInfoDto(
                 content,
                 last.getId().toString(),
                 last.getId(),
                 size,
-                (long) indexInfos.size(),
+                totalElements,
                 hasNext
         );
     }

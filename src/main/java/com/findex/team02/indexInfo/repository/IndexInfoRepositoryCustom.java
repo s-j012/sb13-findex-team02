@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface IndexInfoRepositoryCustom {
 
-    List<IndexInfo> findAllByCondition (IndexInfoSearchRequest request);
+    long countTotalElements(IndexInfoSearchRequest request);
+
+    List<IndexInfo> findAllByCondition(IndexInfoSearchRequest request);
 
 }

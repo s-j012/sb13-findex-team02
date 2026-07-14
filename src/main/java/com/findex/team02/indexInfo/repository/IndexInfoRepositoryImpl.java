@@ -7,6 +7,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,21 @@ public class IndexInfoRepositoryImpl implements IndexInfoRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public long countTotalElements(IndexInfoSearchRequest request) {
+        Long count = queryFactory
+                .select(indexInfo.count())
+                .from(indexInfo)
+                .where(
+                        indexClassificationEq(request.indexClassification()),
+                        indexNameEq(request.indexName()),
+                        favoriteEq(request.favorite())
+                )
+                .fetchOne();
+
+        return count != null ? count : 0L;
+    }
+
+    @Override
     public List<IndexInfo> findAllByCondition(IndexInfoSearchRequest request) {
 
         return queryFactory
@@ -27,7 +43,13 @@ public class IndexInfoRepositoryImpl implements IndexInfoRepositoryCustom {
                 .where(
                         indexClassificationEq(request.indexClassification()),
                         indexNameEq(request.indexName()),
-                        favoriteEq(request.favorite())
+                        favoriteEq(request.favorite()),
+                        cursorCondition(
+                                request.sortField(),
+                                request.sortDirection(),
+                                request.cursor(),
+                                request.idAfter()
+                        )
                 )
                 .orderBy(orderSpecifiers(
                         request.sortField(),
@@ -69,14 +91,14 @@ public class IndexInfoRepositoryImpl implements IndexInfoRepositoryCustom {
 
     // 지수 분류명 필터
     private BooleanExpression indexClassificationEq(String classification) {
-        return classification != null
+        return StringUtils.hasText(classification)
                 ? indexInfo.indexClassification.eq(classification)
                 : null;
     }
 
     // 지수명 필터
     private BooleanExpression indexNameEq(String name) {
-        return name != null
+        return StringUtils.hasText(name)
                 ? indexInfo.indexName.eq(name)
                 : null;
     }
@@ -86,6 +108,53 @@ public class IndexInfoRepositoryImpl implements IndexInfoRepositoryCustom {
         return favorite != null
                 ? indexInfo.favorite.eq(favorite)
                 : null;
+    }
+
+    // 커서 페이지 네이션
+    private BooleanExpression cursorCondition(
+            String sortField,
+            String sortDirection,
+            String cursor,
+            Long idAfter
+    ) {
+        if (!StringUtils.hasText(cursor) || idAfter == null) {
+            return null;
+        }
+
+        if (!StringUtils.hasText(sortField)) {
+            sortField = "indexClassification";
+        }
+
+        boolean isDesc = "desc".equalsIgnoreCase(sortDirection);
+
+        return switch (sortField) {
+            case "indexName" -> isDesc
+                    ? indexInfo.indexName.lt(cursor)
+                    .or(indexInfo.indexName.eq(cursor)
+                            .and(indexInfo.id.gt(idAfter)))
+                    : indexInfo.indexName.gt(cursor)
+                    .or(indexInfo.indexName.eq(cursor)
+                            .and(indexInfo.id.gt(idAfter)));
+            case "employedItemsCount" -> {
+                Integer count = Integer.valueOf(cursor);
+
+                yield isDesc
+                        ? indexInfo.employedItemsCount.lt(count)
+                        .or(indexInfo.employedItemsCount.eq(count)
+                                .and(indexInfo.id.gt(idAfter)))
+                        : indexInfo.employedItemsCount.gt(count)
+                        .or(indexInfo.employedItemsCount.eq(count)
+                                .and(indexInfo.id.gt(idAfter)));
+            }
+            default -> isDesc
+                    ? indexInfo.indexClassification.lt(cursor)
+                    .or(indexInfo.indexClassification.eq(cursor)
+                            .and(indexInfo.id.gt(idAfter)))
+                    : indexInfo.indexClassification.gt(cursor)
+                    .or(indexInfo.indexClassification.eq(cursor)
+                            .and(indexInfo.id.gt(idAfter)));
+        };
+
     }
 
 }
