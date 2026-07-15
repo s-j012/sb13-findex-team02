@@ -10,10 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
-        IndexDataRepositoryCustom {
+    IndexDataRepositoryCustom {
 
     // 특정 지수의 데이터를 최신 기준일자 순으로 조회할 때 사용한다.
-    // 예: 최근 데이터부터 화면에 보여주거나, 최신 기준 데이터 확인이 필요할 때 사용한다.
     List<IndexData> findByIndexInfoIdOrderByBaseDateDesc(Long indexInfoId);
 
     // 특정 지수의 데이터를 오래된 기준일자 순으로 조회할 때 사용한다.
@@ -22,6 +21,7 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
 
     // 특정 지수의 특정 기간 데이터를 최신 기준일자 순으로 조회할 때 사용한다.
     // 예: 기간 내 데이터를 기본적으로 최신순으로 보여줘야 할 때 사용한다.
+    // CSV export에서 최신 날짜순 정렬이 필요할 때 사용한다.
     List<IndexData> findByIndexInfoIdAndBaseDateBetweenOrderByBaseDateDesc(
             Long indexInfoId,
             LocalDate startDate,
@@ -30,20 +30,21 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
 
     // 특정 지수의 특정 기간 데이터를 오래된 기준일자 순으로 조회할 때 사용한다.
     // 예: 차트 조회에서 dataPoints를 날짜 오름차순으로 만들 때 사용한다.
-    List<IndexData> findByIndexInfoIdAndBaseDateBetweenOrderByBaseDateAsc(
-            Long indexInfoId,
-            LocalDate startDate,
-            LocalDate endDate
-    );
-
-    // 특정 지수의 특정 기간 데이터를 사용자가 선택한 정렬 조건으로 조회할 때 사용한다.
-    // 예: CSV export에서 sortField, sortDirection 값에 따라 동적으로 정렬할 때 사용한다.
+    // CSV export에서 sortField, sortDirection에 따라 동적으로 정렬할 때 사용한다.
     List<IndexData> findByIndexInfoIdAndBaseDateBetween(
             Long indexInfoId,
             LocalDate startDate,
             LocalDate endDate,
             Sort sort
     );
+
+    // 차트 조회에서 기간 내 데이터를 날짜 오름차순으로 가져올 때 사용한다.
+    List<IndexData> findByIndexInfoIdAndBaseDateBetweenOrderByBaseDateAsc(
+            Long indexInfoId,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
 
     // 특정 지수의 가장 최신 기준일자 데이터를 조회할 때 사용한다.
     // LocalDate.now()가 아니라 DB에 실제 저장된 최신 baseDate를 기준으로 잡기 위해 필요하다.
@@ -70,8 +71,7 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
             LocalDate endDate
     );
 
-    // 특정 지수와 특정 기준일자에 해당하는 지수 데이터를 조회할 때 사용한다.
-    // 예: Open API 동기화 또는 중복 데이터 확인 시 같은 지수, 같은 기준일 데이터가 이미 있는지 확인할 때 사용한다.
+    // 특정 지수의 특정 기준일 데이터를 조회한다.
     Optional<IndexData> findByIndexInfoAndBaseDate(
             IndexInfo indexInfo,
             LocalDate baseDate
