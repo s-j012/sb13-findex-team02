@@ -8,6 +8,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+interface IndexInfoSummary {
+    Long getId();
+    String getIndexClassification();
+    String getIndexName();
+}
 
 @Repository
 public interface IndexInfoRepository extends JpaRepository<IndexInfo, Long>, IndexInfoRepositoryCustom {
@@ -26,4 +31,9 @@ public interface IndexInfoRepository extends JpaRepository<IndexInfo, Long>, Ind
 
     List<IndexInfo> findByIndexNameContaining(String keyword);
 
+    // 특정 컬럼만 조회 (Projection)
+    List<IndexInfoSummary> findAllSummaryBy();
+
 }
+
+
