@@ -81,15 +81,13 @@ public class BasicIndexInfoService implements IndexInfoService {
     public List<IndexInfoSummaryDto> getIndexInfoSummary() {
         List<IndexInfoSummary> indexInfos = indexInfoRepository.findAllSummaryBy();
 
-        List<IndexInfoSummaryDto> result = indexInfos.stream()
+        return indexInfos.stream()
                 .map(s -> new IndexInfoSummaryDto(
                         s.getId(),
                         s.getIndexClassification(),
                         s.getIndexName()
                 ))
                 .toList();
-
-        return result;
     }
 
     // 요청값 검증
