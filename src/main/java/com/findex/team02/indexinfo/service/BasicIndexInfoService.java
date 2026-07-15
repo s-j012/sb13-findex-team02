@@ -9,7 +9,6 @@ import com.findex.team02.indexinfo.mapper.IndexInfoMapper;
 import com.findex.team02.indexinfo.repository.IndexInfoRepository;
 import com.findex.team02.indexinfo.repository.projection.IndexInfoSummary;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -78,7 +77,8 @@ public class BasicIndexInfoService implements IndexInfoService {
         );
     }
 
-    public ResponseEntity<List<IndexInfoSummaryDto>> indexInfoSummary() {
+    @Override
+    public List<IndexInfoSummaryDto> getIndexInfoSummary() {
         List<IndexInfoSummary> indexInfos = indexInfoRepository.findAllSummaryBy();
 
         List<IndexInfoSummaryDto> result = indexInfos.stream()
@@ -89,7 +89,7 @@ public class BasicIndexInfoService implements IndexInfoService {
                 ))
                 .toList();
 
-        return ResponseEntity.ok(result);
+        return result;
     }
 
     // 요청값 검증
