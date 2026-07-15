@@ -33,7 +33,8 @@ public class BasicSyncJobService implements SyncJobService {
     @Override
     public List<SyncJobDto> syncIndexInfo(String worker) {
 
-        List<OpenApiItemDto> apiItems = openApiService.getIndexData(LocalDate.now());
+        LocalDate latestDate = openApiService.findLatestAvailableDate();
+        List<OpenApiItemDto> apiItems = openApiService.getIndexData(latestDate);
         List<SyncJob> syncJobs = new ArrayList<>();
 
         for (OpenApiItemDto item : apiItems) {
