@@ -8,12 +8,11 @@ import com.findex.team02.sync.entity.SyncJob;
 import com.findex.team02.sync.entity.SyncJobResult;
 import com.findex.team02.sync.entity.SyncJobType;
 import com.findex.team02.sync.repository.SyncJobRepository;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -47,7 +46,7 @@ public class IndexInfoSyncExecutor {
 
     private IndexInfo createIndexInfo(OpenApiItemDto item) {
         IndexInfo indexInfo = IndexInfo.builder()
-                .indexCategoryName(item.idxCsf())
+                .indexClassification(item.idxCsf())
                 .indexName(item.idxNm())
                 .itemCount(item.epyItmsCnt())
                 .basePointTime(item.basPntm())
