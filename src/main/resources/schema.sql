@@ -227,5 +227,8 @@ COMMENT ON COLUMN "sync_job"."result"
 COMMENT ON COLUMN "sync_job"."created_at"
     IS '생성일';
 
+COMMENT ON COLUMN "sync_job"."updated_at"
+    IS '수정일';
+
 COMMENT ON COLUMN "sync_job"."job_type"
     IS 'INDEX_INFO, INDEX_DATA';
