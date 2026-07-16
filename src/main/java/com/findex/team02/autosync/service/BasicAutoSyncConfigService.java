@@ -1,12 +1,16 @@
 package com.findex.team02.autosync.service;
 
+import com.findex.team02.autosync.dto.request.AutoSyncConfigSearchRequest;
 import com.findex.team02.autosync.dto.request.AutoSyncConfigUpdateRequest;
 import com.findex.team02.autosync.dto.response.AutoSyncConfigDto;
 import com.findex.team02.autosync.dto.response.CursorPageResponseAutoSyncConfigDto;
 import com.findex.team02.autosync.entity.AutoSyncConfig;
+import com.findex.team02.autosync.mapper.AutoSyncConfigMapper;
 import com.findex.team02.autosync.repository.AutoSyncConfigRepository;
 import com.findex.team02.global.exception.ResourceNotFoundException;
+import com.findex.team02.indexinfo.dto.response.CursorPageResponseIndexInfoDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,50 +20,58 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class BasicAutoSyncConfigService implements AutoSyncConfigService{
 
     private final AutoSyncConfigRepository autoSyncConfigRepository;
+    private final AutoSyncConfigMapper autoSyncConfigMapper;
 
     @Override
     @Transactional(readOnly = true)
-    public CursorPageResponseAutoSyncConfigDto findAll(Long indexInfoId, Boolean enabled, Long idAfter, String cursor, String sortField, String sortDirection, Integer size) {
+    public CursorPageResponseAutoSyncConfigDto findAll(AutoSyncConfigSearchRequest request) {
+        int size = request.size();
 
-        int pageSize = size == null ? 10 : size;
+        List<AutoSyncConfig> configs = autoSyncConfigRepository.findAllByCondition(request);
 
-        List<AutoSyncConfig> configs = autoSyncConfigRepository.findAll()
-                .stream()
-                .filter(config -> indexInfoId == null
-                        || config.getIndexInfo().getId().equals(indexInfoId))
-                .filter(config -> enabled == null
-                        || config.getEnabled().equals(enabled))
-                .sorted(resolveComparator(sortField, sortDirection))
-                .toList();
+        List<AutoSyncConfigDto> content = autoSyncConfigMapper.toDto(configs);
 
-        List<AutoSyncConfig> pagedConfigs = configs.stream()
-                .filter(config -> idAfter == null || config.getId() > idAfter)
-                .limit(pageSize + 1)
-                .toList();
+        long totalElements = autoSyncConfigRepository.countTotalElements(request);
 
-        boolean hasNext = pagedConfigs.size() > pageSize;
+        // 조회 결과가 없는 경우 빈 리스트 처리
+        if (configs.isEmpty()) {
+            return new CursorPageResponseAutoSyncConfigDto(
+                    List.of(),
+                    null,
+                    null,
+                    size,
+                    0L,
+                    false
+            );
+        }
 
-        List<AutoSyncConfig> content = hasNext
-                ? pagedConfigs.subList(0, pageSize)
-                : pagedConfigs;
+        boolean hasNext = configs.size() > size;
 
-        Long nextIdAfter = content.isEmpty()
-                ? null
-                : content.get(content.size() - 1).getId();
+        if (hasNext) {
+            configs = configs.subList(0, size);
+            content = content.subList(0, size);
+        }
+
+        AutoSyncConfig last = configs.get(configs.size() - 1);
+
+        String nextCursor = switch (request.sortField() == null ? "" : request.sortField()) {
+            case "enabled" -> String.valueOf(last.getEnabled());
+            default -> last.getIndexInfo().getIndexName();
+        };
 
         return new CursorPageResponseAutoSyncConfigDto(
-                content.stream()
-                        .map(this::toDto)
-                        .toList(),
-                null,
-                nextIdAfter,
-                pageSize,
-                configs.size(),
+                content,
+                nextCursor,
+                last.getId(),
+                size,
+                totalElements,
                 hasNext
         );
+
     }
 
     @Override
@@ -82,20 +94,5 @@ public class BasicAutoSyncConfigService implements AutoSyncConfigService{
         );
     }
 
-    private Comparator<AutoSyncConfig> resolveComparator(String sortField, String sortDirection) {
-        Comparator<AutoSyncConfig> comparator = switch (sortField == null ? "id" : sortField) {
-            case "indexInfoId" -> Comparator.comparing(config -> config.getIndexInfo().getId());
-            case "indexName" -> Comparator.comparing(config -> config.getIndexInfo().getIndexName());
-            case "indexClassification" -> Comparator.comparing(config -> config.getIndexInfo().getIndexClassification());
-            case "enabled" -> Comparator.comparing(AutoSyncConfig::getEnabled);
-            default -> Comparator.comparing(AutoSyncConfig::getId);
-        };
-
-        if ("desc".equalsIgnoreCase(sortDirection)) {
-            return comparator.reversed();
-        }
-
-        return comparator;
-    }
 }
 
