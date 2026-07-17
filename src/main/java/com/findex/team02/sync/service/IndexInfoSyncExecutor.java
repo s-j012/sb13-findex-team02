@@ -1,22 +1,23 @@
 package com.findex.team02.sync.service;
 
-import com.findex.team02.indexinfo.entity.IndexInfo;
+import com.findex.team02.autosync.entity.AutoSyncConfig;
+import com.findex.team02.autosync.repository.AutoSyncConfigRepository;
 import com.findex.team02.global.type.SourceType;
+import com.findex.team02.indexinfo.entity.IndexInfo;
 import com.findex.team02.indexinfo.repository.IndexInfoRepository;
 import com.findex.team02.sync.dto.response.OpenApiItemDto;
 import com.findex.team02.sync.entity.SyncJob;
 import com.findex.team02.sync.entity.SyncJobResult;
 import com.findex.team02.sync.entity.SyncJobType;
 import com.findex.team02.sync.repository.SyncJobRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class IndexInfoSyncExecutor {
 
     private final IndexInfoRepository indexInfoRepository;
     private final SyncJobRepository syncJobRepository;
+    private final AutoSyncConfigRepository autoSyncConfigRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SyncJob syncOne(OpenApiItemDto item, String worker) {
@@ -64,7 +66,10 @@ public class IndexInfoSyncExecutor {
                 .sourceType(SourceType.OPEN_API)
                 .build();
 
-        return indexInfoRepository.save(indexInfo);
+        IndexInfo saved = indexInfoRepository.save(indexInfo);
+        AutoSyncConfig autoSyncConfig = new AutoSyncConfig(saved, false);
+        autoSyncConfigRepository.save(autoSyncConfig);
+        return saved;
     }
 
     private Integer toInteger(String value) {

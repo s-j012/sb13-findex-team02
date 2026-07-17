@@ -78,4 +78,7 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
     );
 
     boolean existsByIndexInfo_IdAndBaseDate(Long indexInfoId, LocalDate baseDate);
+
+    // 특정 지수에 연결된 모든 IndexData를 삭제한다.
+    void deleteAllByIndexInfoId(Long indexInfoId);
 }

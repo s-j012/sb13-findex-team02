@@ -22,4 +22,6 @@ public interface IndexInfoService {
 
     // 지수 정보 단건 조회 - ID로 조회하여 응답 데이터 반환
     IndexInfoDto getIndexInfo(Long id);
+    List<IndexInfoSummaryDto> getIndexInfoSummary();
+
 }
