@@ -80,16 +80,25 @@ public class IndexInfo extends BaseEntity {
     }
 
     // 지수 분류명과 지수명은 중복 방지 기준이므로 수정 대상에서 제외한다.
+    // PATCH 요청 시 null로 전달된 필드는 기존 값을 유지한다.
     public void updateInfo(
             Integer employedItemsCount,
             LocalDate basePointInTime,
             BigDecimal baseIndex,
             Boolean favorite
     ) {
-        this.employedItemsCount = employedItemsCount;
-        this.basePointInTime = basePointInTime;
-        this.baseIndex = baseIndex;
-        this.favorite = favorite != null ? favorite : false;
+        if (employedItemsCount != null) {
+            this.employedItemsCount = employedItemsCount;
+        }
+        if (basePointInTime != null) {
+            this.basePointInTime = basePointInTime;
+        }
+        if (baseIndex != null) {
+            this.baseIndex = baseIndex;
+        }
+        if (favorite != null) {
+            this.favorite = favorite;
+        }
     }
 
     public boolean isFavorite() {
