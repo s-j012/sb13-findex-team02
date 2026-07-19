@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BasicOpenApiService implements OpenApiService {
 
-    private static final int LATEST_DATA_FETCH_SIZE = 1000;
+    private static final int INDEX_DATA_FETCH_SIZE = 1000;
 
     private final RestClient restClient;
 
@@ -26,7 +26,7 @@ public class BasicOpenApiService implements OpenApiService {
     public List<OpenApiItemDto> getIndexData(LocalDate date) {
 
         String basDt = date.format(DateTimeFormatter.BASIC_ISO_DATE);
-        OpenApiResponse response = callApi(basDt, null);
+        OpenApiResponse response = callApi(basDt, INDEX_DATA_FETCH_SIZE);
 
         return extractItems(response);
     }
@@ -47,7 +47,7 @@ public class BasicOpenApiService implements OpenApiService {
     @Override
     public List<OpenApiItemDto> getLatestIndexData() {
 
-        OpenApiResponse response = callApi(null, LATEST_DATA_FETCH_SIZE);
+        OpenApiResponse response = callApi(null, INDEX_DATA_FETCH_SIZE);
         List<OpenApiItemDto> items = extractItems(response);
 
         if (items.isEmpty()) {
