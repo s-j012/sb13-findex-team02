@@ -28,16 +28,21 @@ public class IndexInfoSyncExecutor {
     private final AutoSyncConfigRepository autoSyncConfigRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public SyncJob syncOne(OpenApiItemDto item, IndexInfo existing, String worker) {
-        IndexInfo indexInfo = (existing != null)
-                ? updateIndexInfo(existing, item)
-                : createIndexInfo(item);
+    public SyncJob syncOne(OpenApiItemDto item, String worker) {
+        IndexInfo indexInfo = saveOrUpdateIndexInfo(item);
         return saveSyncJob(indexInfo, worker, SyncJobResult.SUCCESS);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SyncJob saveFailure(String worker) {
         return saveSyncJob(null, worker, SyncJobResult.FAILED);
+    }
+
+    private IndexInfo saveOrUpdateIndexInfo(OpenApiItemDto item) {
+        return indexInfoRepository
+                .findByIndexClassificationAndIndexName(item.idxCsf(), item.idxNm())
+                .map(indexInfo -> updateIndexInfo(indexInfo, item))
+                .orElseGet(() -> createIndexInfo(item));
     }
 
     private IndexInfo updateIndexInfo(IndexInfo indexInfo, OpenApiItemDto item) {
@@ -47,8 +52,7 @@ public class IndexInfoSyncExecutor {
                 toBigDecimal(item.basIdx()),
                 indexInfo.getFavorite()
         );
-
-        return indexInfoRepository.save(indexInfo);
+        return indexInfo;
     }
 
     private IndexInfo createIndexInfo(OpenApiItemDto item) {

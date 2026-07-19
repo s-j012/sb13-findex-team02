@@ -27,18 +27,21 @@ public class IndexDataSyncExecutor {
     private final SyncJobRepository syncJobRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public SyncJob syncOne(IndexInfo indexInfo, LocalDate targetDate, OpenApiItemDto item, IndexData existing, String worker) {
-        if (existing != null) {
-            updateIndexData(existing, item);
-        } else {
-            createIndexData(indexInfo, targetDate, item);
-        }
+    public SyncJob syncOne(IndexInfo indexInfo, LocalDate targetDate, OpenApiItemDto item, String worker) {
+        saveOrUpdateIndexData(indexInfo, targetDate, item);
         return saveSyncJob(indexInfo, targetDate, worker, SyncJobResult.SUCCESS);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SyncJob saveFailure(IndexInfo indexInfo, LocalDate targetDate, String worker) {
         return saveSyncJob(indexInfo, targetDate, worker, SyncJobResult.FAILED);
+    }
+
+    private void saveOrUpdateIndexData(IndexInfo indexInfo, LocalDate targetDate, OpenApiItemDto item) {
+        indexDataRepository
+                .findByIndexInfoAndBaseDate(indexInfo, targetDate)
+                .map(indexData -> updateIndexData(indexData, item))
+                .orElseGet(() -> createIndexData(indexInfo, targetDate, item));
     }
 
     private IndexData updateIndexData(IndexData indexData, OpenApiItemDto item) {
@@ -49,12 +52,11 @@ public class IndexDataSyncExecutor {
                 toBigDecimal(item.lopr()),
                 toBigDecimal(item.vs()),
                 toBigDecimal(item.fltRt()),
-                toLong(item.trqu()),
-                toLong(item.trPrc()),
-                toLong(item.lstgMrktTotAmt())
+                toLong(item.tvol()),
+                toLong(item.tamt()),
+                toLong(item.mktcap())
         );
-
-        return indexDataRepository.save(indexData);
+        return indexData;
     }
 
     private IndexData createIndexData(IndexInfo indexInfo, LocalDate targetDate, OpenApiItemDto item) {
@@ -68,9 +70,9 @@ public class IndexDataSyncExecutor {
                 .lowPrice(toBigDecimal(item.lopr()))
                 .versus(toBigDecimal(item.vs()))
                 .fluctuationRate(toBigDecimal(item.fltRt()))
-                .tradingQuantity(toLong(item.trqu()))
-                .tradingPrice(toLong(item.trPrc()))
-                .marketTotalAmount(toLong(item.lstgMrktTotAmt()))
+                .tradingQuantity(toLong(item.tvol()))
+                .tradingPrice(toLong(item.tamt()))
+                .marketTotalAmount(toLong(item.mktcap()))
                 .build();
 
         return indexDataRepository.save(indexData);
