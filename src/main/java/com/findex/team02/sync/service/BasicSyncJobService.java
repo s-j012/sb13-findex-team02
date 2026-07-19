@@ -12,6 +12,7 @@ import com.findex.team02.sync.dto.response.SyncJobSearchCondition;
 import com.findex.team02.sync.entity.SyncJob;
 import com.findex.team02.sync.mapper.SyncJobMapper;
 import com.findex.team02.sync.repository.SyncJobRepository;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +70,10 @@ public class BasicSyncJobService implements SyncJobService {
         for (LocalDate targetDate = request.baseDateFrom();
              !targetDate.isAfter(request.baseDateTo());
              targetDate = targetDate.plusDays(1)) {
+
+            if (isWeekend(targetDate)) {
+                continue;
+            }
 
             Map<String, OpenApiItemDto> itemsByIndexKey;
 
@@ -180,5 +185,10 @@ public class BasicSyncJobService implements SyncJobService {
 
     private String indexKey(OpenApiItemDto item) {
         return item.idxCsf() + "|" + item.idxNm();
+    }
+
+    private boolean isWeekend(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 }
