@@ -26,7 +26,8 @@ public class AutoSyncConfigRepositoryImpl implements AutoSyncConfigRepositoryCus
                 .select(autoSyncConfig.count())
                 .from(autoSyncConfig)
                 .where(
-                        indexInfoIdEq(request.indexInfoId())
+                        indexInfoIdEq(request.indexInfoId()),
+                        enabledEq(request.enabled())
                 )
                 .fetchOne();
 
@@ -40,6 +41,7 @@ public class AutoSyncConfigRepositoryImpl implements AutoSyncConfigRepositoryCus
                 .selectFrom(autoSyncConfig)
                 .where(
                         indexInfoIdEq(request.indexInfoId()),
+                        enabledEq(request.enabled()),
                         cursorCondition(
                                 request.sortField(),
                                 request.sortDirection(),
@@ -82,6 +84,12 @@ public class AutoSyncConfigRepositoryImpl implements AutoSyncConfigRepositoryCus
     private BooleanExpression indexInfoIdEq(Long indexInfoId) {
         return indexInfoId != null
                 ? autoSyncConfig.indexInfo.id.eq(indexInfoId)
+                : null;
+    }
+
+    private BooleanExpression enabledEq(Boolean enabled) {
+        return enabled != null
+                ? autoSyncConfig.enabled.eq(enabled)
                 : null;
     }
 
