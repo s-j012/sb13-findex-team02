@@ -39,8 +39,7 @@ public class BasicSyncJobService implements SyncJobService {
         List<SyncJob> syncJobs = new ArrayList<>();
 
         try {
-            LocalDate latestDate = openApiService.findLatestAvailableDate();
-            apiItems = openApiService.getIndexData(latestDate);
+            apiItems = openApiService.getLatestIndexData();
         } catch (Exception e) {
             syncJobs.add(indexInfoSyncExecutor.saveFailure(worker));
             return syncJobMapper.toDtoList(syncJobs);
